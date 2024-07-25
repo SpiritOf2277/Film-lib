@@ -1,4 +1,11 @@
+﻿using System.Runtime;
+
 var builder = WebApplication.CreateBuilder(args);
+
+//  builder.Services.Configure<Settings>(options =>
+//  {
+//      options.TmdbApiKey = tmdbApiKey;
+//  });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -24,3 +31,20 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+public class Settings
+{
+    public string GetTmdbApiKey()
+    /*  
+     *  Вместо хранения значения переменной окружения в поле класса, мы используем геттер.
+     *  Это позволяет минимизировать время хранения конфиденциальных данных в памяти,
+     *  что уменьшает вероятность утечки данных. 
+    */
+    {
+        var apiKey = Environment.GetEnvironmentVariable("TMDB_API_KEY");
+        if (string.IsNullOrEmpty(apiKey)) {
+            throw new InvalidOperationException("TMDB_API_KEY is not set in the environment variables.");
+        }
+        return apiKey;
+    }
+}
